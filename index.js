@@ -132,3 +132,47 @@ function addDepartment(data){
           init();
         })
       }
+
+      async function addEmployee(data){
+        let db = await mysql.createConnection(
+          {
+            host: 'localhost',
+            user: 'root',
+            password: '',
+            database: 'tracker_db'
+          },
+          console.log(`You are connected to the Employee tracker database.`)
+        );
+        const [roleQuery] = await db.query(`SELECT title, id from emp_role`)
+        const [userQuery] = await db.query(`SELECT first_name, last_name, id from employee`)
+          inquirer.prompt([
+            {
+              type: 'input',
+              name: 'first_name',
+              message: "What's the first name of the employee",
+            },
+            {
+              type: 'input',
+              name: 'last_name',
+              message: "What's the last name of the employee",
+            },
+            {
+              type: 'list',
+              name: 'role_id',
+              message: "What's this employee's role",
+              choices: roleQuery.map(role => ({name:role.title, value: role.id}))
+            },
+            {
+              type: 'list',
+              name: 'manager_id',
+              message: "What's the name of this employee's manager",
+              choices: userQuery.map(employee => ({name:`${employee.first_name} ${employee.last_name}`, value: employee.id}))
+            },
+          ])
+          .then((res) => {
+            const addTo = new Employee()
+            addTo.addEmp(res.first_name, res.last_name, res.role_id, res.manager_id)
+            console.log(`Added ${res.first_name} to the database!`)
+            init();
+          })
+        }
