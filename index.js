@@ -22,8 +22,8 @@ inquirer.prompt(
 )
 
 .then(res => {
-  const choice = res.mainmenu;
-  switch(choice){
+  // const choice = res.mainmenu;
+  switch(res.menu){
     case 'view all departments':
       depTable(res)
       break;
@@ -49,6 +49,14 @@ inquirer.prompt(
       quit(res);
       break;
   }})}
+
+  const viewalldepartments = (res) => {
+    db.query('SELECT * FROM department', function (err, res) {
+        console.table(res);
+        initialPrompt();
+    });
+}
+
 
   async function depTable(data){
     const showDbQuery =  new Department()
@@ -84,8 +92,8 @@ function addDepartment(data){
     ])
     .then((data) => {
       const addTo = new Department()
-      addTo.addDep(data.dep_name)
-      console.log(`Added ${data.dep_name} to the database!`);
+      addTo.addDep(data.department_name)
+      console.log(`Added ${data.department_name} to the database!`);
       init();
     })
   }
@@ -103,7 +111,7 @@ function addDepartment(data){
         console.log(`You are connected to the Employee tracker database.`)
       );
   
-      const [depQuery] = await db.query(`SELECT dep_name as Department, id  FROM department`)
+      const [depQuery] = await db.query(`SELECT department_name as Department, id  FROM department`)
       
         inquirer.prompt([
           {
@@ -143,7 +151,7 @@ function addDepartment(data){
           },
           console.log(`You are connected to the Employee tracker database.`)
         );
-        const [roleQuery] = await db.query(`SELECT title, id from emp_role`)
+        const [roleQuery] = await db.query(`SELECT title, id from employee_role`)
         const [userQuery] = await db.query(`SELECT first_name, last_name, id from employee`)
           inquirer.prompt([
             {
@@ -188,7 +196,7 @@ function addDepartment(data){
               },
               console.log(`Connected to the employees_db database.`)
             );
-            const [roleQuery] = await db.query(`SELECT title, id from emp_role`)
+            const [roleQuery] = await db.query(`SELECT title, id from employee_role`)
             const [userQuery] = await db.query(`SELECT first_name, last_name, id from employee`)
             inquirer.prompt([
               {
